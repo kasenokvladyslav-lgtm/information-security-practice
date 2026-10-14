@@ -93,6 +93,28 @@ Swagger UI: http://localhost:8000/docs
 | 19 | CORS чужий домен | 400 | 400 ✅ |
 | 20 | Rate Limiting | 429 | 429 ✅ |
 
+## Скріншоти результатів роботи
+
+### 1. Документація REST API — Swagger UI
+
+![Swagger UI](docs/screenshots/01-swagger.jpg)
+
+### 2. Перевірка стану сервера та бази даних
+
+![Health Check](docs/screenshots/02-health.jpg)
+
+### 3. Успішна автентифікація користувача
+
+![Authentication](docs/screenshots/03-login.jpg)
+
+### 4. Розмежування прав доступу — HTTP 403
+
+![RBAC](docs/screenshots/04-rbac.jpg)
+
+### 5. Захисні HTTP-заголовки
+
+![Security Headers](docs/screenshots/05-security.jpg)
+
 ## Висновок
 
 Реалізовано кілька незалежних рівнів захисту (Defense in Depth). Аутентифікація визначає,
