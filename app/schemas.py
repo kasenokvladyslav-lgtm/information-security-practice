@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator
+from app.validators.sanitizer import sanitize_text
 NAME_RE = re.compile(r"^[A-Za-zА-Яа-яІіЇїЄєҐґ'’ .\-]+$")
 
 class UserCreate(BaseModel):
@@ -64,3 +65,8 @@ class GradeCreate(BaseModel):
     subject_id: int = Field(..., gt=0)
     grade: int = Field(..., ge=0, le=100)
     comment: str | None = Field(None, max_length=500)
+
+    @field_validator("comment")
+    @classmethod
+    def clean_comment(cls, v: str | None) -> str | None:
+        return sanitize_text(v) if v else v
