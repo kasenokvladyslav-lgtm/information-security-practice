@@ -1,3 +1,11 @@
-
-__pycache__/
+.git
+.env
+.venv
+venv
+__pycache__
+**/__pycache__
 *.pyc
+**/*.pyc
+data
+*.db
+practice-stages-2-to-5.zip
