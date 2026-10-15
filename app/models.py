@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.orm import relationship
+from app.crypto.encryption import encrypt_field, decrypt_field, blind_index
 from app.database import Base
 
 user_roles = Table("user_roles", Base.metadata,
@@ -14,7 +15,9 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False, index=True)
-    email = Column(String(100), unique=True, nullable=False, index=True)
+    _encrypted_email = Column("encrypted_email", String(500), nullable=True)
+    email_index = Column(String(64), unique=True, nullable=True, index=True)
+    _encrypted_phone = Column("encrypted_phone", String(500), nullable=True)
     full_name = Column(String(150), nullable=False)
     password_hash = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
@@ -23,6 +26,24 @@ class User(Base):
     roles = relationship("Role", secondary=user_roles, back_populates="users")
     group = relationship("Group", back_populates="students")
     grades = relationship("Grade", back_populates="student", foreign_keys="Grade.student_id")
+
+    @property
+    def email(self):
+        return decrypt_field(self._encrypted_email)
+
+    @email.setter
+    def email(self, value):
+        self._encrypted_email = encrypt_field(value)
+        self.email_index = blind_index(value) if value else None
+
+    @property
+    def phone(self):
+        return decrypt_field(self._encrypted_phone)
+
+    @phone.setter
+    def phone(self, value):
+        self._encrypted_phone = encrypt_field(value)
+
 
 class Role(Base):
     __tablename__ = "roles"

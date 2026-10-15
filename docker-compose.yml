@@ -9,6 +9,8 @@ services:
       - db_data:/app_code/data
     environment:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-only-secret-change-me}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+      - BLIND_INDEX_KEY=${BLIND_INDEX_KEY:?BLIND_INDEX_KEY is required}
       - CORS_ORIGINS=http://localhost:3000,http://localhost:8000
     restart: unless-stopped
 
