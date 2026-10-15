@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from app.middleware.rate_limiter import limiter
+from app.audit.detector import check_brute_force, check_off_hours_access
+from app.audit.logger import get_client_ip, log_event, log_login_failed, log_login_success
 from jose import JWTError
 from sqlalchemy.orm import Session
 from app.auth.dependencies import get_current_user
@@ -28,16 +30,25 @@ def register(request: Request, user_data: UserCreate, db: Session = Depends(get_
                 password_hash=hash_password(user_data.password))
     user.roles.append(role)
     db.add(user); db.commit(); db.refresh(user)
+    log_event(db,"user_registered","success",get_client_ip(request),user_id=user.id,username=user.username,http_method="POST",endpoint="/auth/register",status_code=201)
     return user
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute")
 def login(request: Request, credentials: LoginRequest, db: Session = Depends(get_db)):
+    ip = get_client_ip(request)
+    if check_brute_force(db, ip, credentials.username):
+        log_login_failed(db, credentials.username, ip, reason="brute_force_blocked")
+        raise HTTPException(429, "Забагато невдалих спроб. Спробуйте через 5 хвилин.")
     user = db.query(User).filter(User.username == credentials.username).first()
     if not user or not verify_password(credentials.password, user.password_hash):
+        log_login_failed(db, credentials.username, ip)
         raise HTTPException(401, "Невірний логін або пароль")
     if not user.is_active:
+        log_login_failed(db, credentials.username, ip, reason="inactive")
         raise HTTPException(403, "Акаунт деактивовано")
+    check_off_hours_access(db, user.id, user.username, ip)
+    log_login_success(db, user.id, user.username, ip)
     return TokenResponse(access_token=create_access_token(user.id, primary_role(user)), refresh_token=create_refresh_token(user.id))
 
 @router.post("/refresh", response_model=TokenResponse)

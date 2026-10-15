@@ -1,3 +1,5 @@
+from app.audit.middleware import AuditMiddleware
+from app.audit.router import router as audit_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -30,3 +32,6 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy", "database": "SQLite", "tables": len(Base.metadata.tables)}
+
+app.add_middleware(AuditMiddleware)
+app.include_router(audit_router)
