@@ -1,0 +1,22 @@
+[OK] .env ignored
+[OK] .env not tracked
+[OK] no fallback secret
+[OK] nonroot Docker user
+[OK] healthcheck defined
+[OK] read-only root filesystem
+[OK] no-new-privileges
+[OK] capabilities dropped
+[OK] running as appuser
+[OK] runtime healthy
+[OK] HTTPS 200
+[OK] HTTP redirects to HTTPS
+[OK] content-security-policy
+[OK] x-frame-options
+[OK] x-content-type-options
+[OK] strict-transport-security
+[OK] filesystem protected
+[OK] pip-audit report present
+[OK] trivy report present
+[OK] Bandit report present
+FAIL: 0 WARN: 0
+SECURITY CHECK PASSED

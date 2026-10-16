@@ -17,6 +17,7 @@ git clone https://github.com/kasenokvladyslav-lgtm/information-security-practice
 cd information-security-practice
 cp .env.example .env
 sed -i "s/replace-me-with-64-hex-chars/$(openssl rand -hex 32)/" .env
+bash scripts/generate_cert.sh
 docker compose up -d --build
 docker compose exec api alembic upgrade head
 docker compose exec api python -m app.seed
@@ -114,6 +115,12 @@ Swagger UI: http://localhost:8000/docs
 ### 5. Захисні HTTP-заголовки
 
 ![Security Headers](docs/screenshots/05-security.jpg)
+
+## Безпека — ЗПР №2
+
+Додано шифрування персональних даних Fernet, журнал аудиту 5W, виявлення Brute Force, hardened Docker і Nginx HTTPS. Підсумкові результати наведені у [звіті аудиту безпеки](SECURITY_AUDIT.md).
+
+Контроль безпеки: `bash scripts/security_check.sh`. Мінітести: `bash scripts/pentest_mini.sh`. Сканування: `bash scripts/run_scanners.sh`.
 
 ## Висновок
 
